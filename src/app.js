@@ -1,20 +1,22 @@
 const express = require('express');
 
 const app = express();
-
-app.use("/user",(req, res, next)=>{
-    const token = "abc"
-    const isAuthorized = token === "xyz"
-    if(!isAuthorized){
-        return res.status(401).send("Unauthorized!")
-    }else{
-        next()
-    }
-})
+const {userAuth, adminAuth} = require('./middlewares/auth');
+app.use("/user", userAuth);
 
 app.get("/user",(req, res , next)=>{
     console.log(req.query , req.params);
     res.send({name: "Shiv", age: 24, city: "Kolkata"})
+})
+
+app.get("/admin", adminAuth,(req, res , next)=>{
+    console.log(req.query , req.params);
+    res.send("Admin route")
+})
+
+app.get("/admin/:id", adminAuth,(req, res , next)=>{
+    console.log(req.query , req.params);
+    res.send("Admin route with ID "+ req.params.id)
 })
 
 app.post("/user",(req, res)=>{
