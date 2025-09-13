@@ -1,4 +1,5 @@
 const express = require('express');
+const connectDB = require('./config/database');
 
 const app = express();
 const {userAuth, adminAuth} = require('./middlewares/auth');
@@ -27,10 +28,14 @@ app.use("/",(err, req, res, next)=>{
     res.status(500).send("Something went wrong!")
     }
 })
-
-app.listen(3000, ()=>{
-    console.log("Running on port 3000")
+connectDB().then(()=>{
+    console.log("DB connected");
+    app.listen(3000, ()=>{
+    console.log("Running on server 3000");
 });
+}).catch((err)=>{
+    console.error("DB connection error", err);
+})
 
 
 
