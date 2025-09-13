@@ -10,7 +10,11 @@ app.get("/user",(req, res )=>{
 })
 
 app.get("/admin", adminAuth,(req, res)=>{
-    throw new Error("Some error")
+    try{
+        throw new Error("Some error")
+    }catch(e){
+        res.status(500).send("Contact support team !")
+    }
 })
 
 app.get("/admin/:id",(req, res , next)=>{
