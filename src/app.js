@@ -5,21 +5,38 @@ const app = express();
 const {userAuth} = require('./models/user');
 const User = require('./models/user');
 
+app.use(express.json());
+
 app.post("/signup", async(req, res )=>{
-    const userObj = {
-        firstName : "Shivam",
-        lastName : "Kumar",
-        emailId : "shivam.kumar@example.com",
-        password : "password123",
-        age : "24",
-        gender : "Male"
-    }
-    const user= new User(userObj);
+    const user= new User(req.body);
     try{
         await user.save();
+        res.status(200).send(user + " is saved successfully");
+    }catch(err){
+        res.status(400).send("Error saving the user"  + err.message );
+    }
+})
+
+app.get("/user", async(req, res )=>{
+        const useEmail = req.body.emailId;
+    try{
+       const user = await User.findOne({emailId: useEmail});
+        if(!user){  
+            res.status(404).send("User not found");
+        }else{
+            res.status(200).send(user);
+        }
+    }catch(err){
+        res.status(400).send("Cannot find user");
+    }
+})
+
+app.get("/feed", async(req, res )=>{
+    try{
+        const user = await User.find();
         res.status(200).send(user);
     }catch(err){
-        res.status(500).send("Internal Server Error");
+        res.status(400).send("Something went wrong");
     }
 })
 
