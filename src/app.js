@@ -22,7 +22,7 @@ app.get("/user", async(req, res )=>{
     try{
        const user = await User.findOne({emailId: useEmail});
         if(!user){  
-            res.status(404).send("User not found");
+            res.status(422).send("User not found");
         }else{
             res.status(200).send(user);
         }
@@ -37,6 +37,35 @@ app.get("/feed", async(req, res )=>{
         res.status(200).send(user);
     }catch(err){
         res.status(400).send("Something went wrong");
+    }
+})
+
+app.delete("/user", async(req, res )=>{
+    const userId = req.body.userId;
+    try{
+        const user = await User.findByIdAndDelete(userId);
+        if(!user){
+            res.status(422).send("User not found");
+        }else{
+            res.status(200).send("User deleted successfully");
+        }
+    }catch(err){
+        res.status(400).send("Something went wrong");
+    }
+})
+
+app.patch("/user", async(req, res )=>{
+    const userId = req.body.userId;
+    const updatedData = req.body;
+    try{
+        const user = await User.findByIdAndUpdate(userId, updatedData, { runValidators: true, returnDocument: 'after'});
+        if(!user){
+            res.status(422).send("User not found");
+        }else{
+            res.status(200).send("User updated successfully");
+        }
+    }catch(err){
+        res.status(400).send("Update failed" + err.message);
     }
 })
 
