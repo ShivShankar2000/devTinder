@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
     },
     photoUrl: { type: String, default: "https://www.pngall.com/wp-content/uploads/5/Profile-PNG-High-Quality-Image.png" },
     bio: { type: String, maxLength: 250, default: "Hello! I am using DevTinder." },
-    skills: { type: [String] },
+    skills: { type: [String], unique: true, trim: true},
 },{
     timestamps: true
 });
