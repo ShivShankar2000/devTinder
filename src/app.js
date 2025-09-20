@@ -30,10 +30,12 @@ app.post("/login", async (req, res) => {
             throw new Error("User not found");
         }
         const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
+        if (isPasswordValid) {
+            res.status(200).send("Login successful");
+        } else {    
             throw new Error("Invalid credentials");
         }
-        res.status(200).send("Login successful");
+        
     } catch (err) {
         res.status(400).send("Error :" + err.message);
     }
@@ -84,6 +86,9 @@ app.patch("/user/:userId", async (req, res) => {
         const isUpdateAllowed = Object.keys(updatedData).every((update) => {
             return ALLOWED_UPDATE.includes(update);
         })
+        if (updatedData.password) {
+            updatedData.password = await bcrypt.hash(updatedData.password, 10);
+        }
 
         if (!isUpdateAllowed) {
             throw new Error("Update not allowed");

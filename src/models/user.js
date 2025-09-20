@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
         }
     } },
     bio: { type: String, maxLength: 250, default: "Hello! I am using DevTinder." },
-    skills: { type: [String], unique: true, trim: true},
+    skills: { type: [String]},
 },{
     timestamps: true
 });
