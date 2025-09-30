@@ -40,7 +40,11 @@ router.get("/user/connection", userAuth, async (req, res) => {
         "toUserId",
         "firstName lastName photoUrl age gender skills bio"
       );
-    const data = connections.map((row) => row.fromUserId);
+    const data = connections.map((row) => {
+      return row.fromUserId._id.equals(user._id)
+        ? row.toUserId
+        : row.fromUserId;
+    });
     res.json({
       message: "User connections retrieved successfully",
       data: data,
