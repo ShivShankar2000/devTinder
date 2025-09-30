@@ -5,7 +5,7 @@ const User = require("../models/user");
 
 const router = express.Router();
 
-router.get("/request/send/:status/:toUserId", userAuth, async (req, res) => {
+router.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
   try {
     const fromUserId = req.user._id;
     const { status, toUserId } = req.params;
@@ -56,5 +56,39 @@ router.get("/request/send/:status/:toUserId", userAuth, async (req, res) => {
     res.status(400).send("Error :" + error.message);
   }
 });
+
+router.post(
+  "/request/respond/:status/:fromUserId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const user = req.user;
+      const { status, fromUserId } = req.params;
+      const validStatuses = ["accepted", "rejected"];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ error: "Invalid status value" });
+      }
+      const connectionRequest = await ConnectionRequest.findOne({
+        _id: fromUserId,
+        toUserId: user._id,
+        status: "interested",
+      });
+      if (!connectionRequest) {
+        return res.status(404).json({ error: "Connection request not found" });
+      }
+      connectionRequest.status = status;
+      const data = await connectionRequest.save();
+      res.json({
+        message:
+          status === "accepted"
+            ? "Connection request accepted successfully"
+            : "Connection request rejected successfully",
+        data,
+      });
+    } catch (error) {
+      res.status(400).send("Error :" + error.message);
+    }
+  }
+);
 
 module.exports = router;
